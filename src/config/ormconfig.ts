@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { NeuralNetwork } from './src/modules/neural-network/neural-network.entity';
+import { NeuralNetwork } from '../modules/neural-network/neural-network.entity';
 import dotenv from 'dotenv';
 
 dotenv.config();

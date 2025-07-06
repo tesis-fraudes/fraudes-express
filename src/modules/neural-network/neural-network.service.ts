@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import AWS from 'aws-sdk';
-import { AppDataSource } from '../../../ormconfig'; // ajusta ruta
+import { AppDataSource } from '../../config/ormconfig'; // ajusta ruta
 import { NeuralNetwork } from './neural-network.entity';
 
 // AWS.config.update({

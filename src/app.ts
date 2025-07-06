@@ -2,7 +2,7 @@ import express from 'express';
 import { swaggerSpec } from './config/swagger';
 import swaggerUi from 'swagger-ui-express';
 import { json } from 'body-parser';
-import { AppDataSource } from '../ormconfig';
+import { AppDataSource } from './config/ormconfig';
 import dotenv from 'dotenv';
 
 import healthRoutes from './modules/health/health.routes';
