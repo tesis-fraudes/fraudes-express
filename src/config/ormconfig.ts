@@ -3,6 +3,8 @@ import { NeuralNetwork } from '../modules/neural-network/neural-network.entity';
 import dotenv from 'dotenv';
 
 //dotenv.config();
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('PORT:', process.env.PORT);
 
 export const AppDataSource = new DataSource({
   type: 'postgres',

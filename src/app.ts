@@ -11,6 +11,9 @@ import neuralNetworkRoutes from './modules/neural-network/neural-network.routes'
 //dotenv.config();
 
 const app = express();
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('PORT:', process.env.PORT);
+
 app.use(json());
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
