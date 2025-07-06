@@ -15,8 +15,8 @@ console.log('CLOUDFLARE_ACCESS_KEY:', process.env.CLOUDFLARE_ACCESS_KEY);
 console.log('CLOUDFLARE_SECRET_KEY:', process.env.CLOUDFLARE_SECRET_KEY);
 console.log('CLOUDFLARE_S3_ENDPOINT:', process.env.CLOUDFLARE_S3_ENDPOINT);
 console.log('CLOUDFLARE_BUCKET_NAME:', process.env.CLOUDFLARE_BUCKET_NAME);
-console.log('DB_HOST:', process.env.DB_HOST);
-console.log('DB_PORT:', process.env.DB_PORT);
+console.log('DB_HOST:', process.env.PGHOST);
+console.log('DB_PORT:', process.env.PGPORT);
 console.log('PORT:', process.env.PORT);
 
 app.use(json());
