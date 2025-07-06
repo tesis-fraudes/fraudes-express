@@ -18,6 +18,7 @@ console.log('CLOUDFLARE_BUCKET_NAME:', process.env.CLOUDFLARE_BUCKET_NAME);
 console.log('DB_HOST:', process.env.PGHOST);
 console.log('DB_PORT:', process.env.PGPORT);
 console.log('PORT:', process.env.PORT);
+console.log('🚨 TODAS LAS ENV DISPONIBLES:', JSON.stringify(process.env, null, 2));
 
 app.use(json());
 
