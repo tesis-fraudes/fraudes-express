@@ -1,12 +1,13 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import redNeuronalService from './neural-network.service';
 
-export const uploadFile = async (req: Request, res: Response) => {
+export const uploadFile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const file = req.file;
   const { modelo, version, accuracy, status } = req.body;
 
   if (!file || !modelo || !version || !accuracy || !status) {
-    return res.status(400).json({ error: 'Faltan campos requeridos o archivo' });
+    const error = new Error('Faltan campos requeridos o archivo');
+    return next(error);
   }
 
   try {
@@ -21,7 +22,8 @@ export const uploadFile = async (req: Request, res: Response) => {
     res.status(201).json(result);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al procesar el archivo' });
+    //res.status(500).json({ error: 'Error al procesar el archivo' });
+    next(error);
   }
 };
 
@@ -35,22 +37,24 @@ export const getAllModels = async (req: Request, res: Response) => {
   }
 };
 
-export const getModelById = async (req: Request, res: Response) => {
+export const getModelById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const id = parseInt(req.params.id, 10);
 
   if (isNaN(id)) {
-    return res.status(400).json({ error: 'ID inválido' });
+    const error = new Error('ID inválido');
+    return next(error);
   }
 
   try {
     const model = await redNeuronalService.getById(id);
     if (!model) {
-      return res.status(404).json({ error: 'Modelo no encontrado' });
+      const error = new Error('Modelo no encontrado');
+      return next(error);
     }
 
     res.json(model);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Error al obtener modelo' });
+    next(err);
   }
 };

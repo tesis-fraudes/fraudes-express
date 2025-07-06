@@ -8,23 +8,23 @@ import {
 @Entity('tbl_neuralnetwork')
 export class NeuralNetwork {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  modelo: string;
+  modelo!: string;
 
   @Column()
-  version: string;
+  version!: string;
 
   @Column()
-  accuracy: string;
+  accuracy!: string;
 
   @Column()
-  status: string;
+  status!: string;
 
   @CreateDateColumn({ name: 'create_at' })
-  createAt: Date;
+  createAt!: Date;
 
   @Column({ name: 'url_file' })
-  urlFile: string;
+  urlFile!: string;
 }
