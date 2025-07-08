@@ -4,6 +4,7 @@ import swaggerUi from 'swagger-ui-express';
 import { json } from 'body-parser';
 import { AppDataSource } from './config/ormconfig';
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 import healthRoutes from './modules/health/health.routes';
 import neuralNetworkRoutes from './modules/neural-network/neural-network.routes';
@@ -11,6 +12,7 @@ import neuralNetworkRoutes from './modules/neural-network/neural-network.routes'
 //dotenv.config();
 
 const app = express();
+app.use(cors());
 
 app.use(json());
 
