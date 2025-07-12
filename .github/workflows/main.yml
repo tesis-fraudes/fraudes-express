@@ -28,6 +28,9 @@ jobs:
           cp package.json dist/
           cp -r node_modules dist/
 
+      - name: Generate Swagger JSON
+        run: npx ts-node scripts/generate-swagger.ts
+
       - name: Zip Lambda function
         run: |
           cd dist
