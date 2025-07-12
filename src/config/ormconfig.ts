@@ -11,5 +11,8 @@ export const AppDataSource = new DataSource({
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,
   synchronize: false, // solo para desarrollo
+  ssl: {
+    rejectUnauthorized: false,
+  },
   entities: [NeuralNetwork],
 });
