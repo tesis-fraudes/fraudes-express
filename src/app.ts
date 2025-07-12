@@ -10,7 +10,7 @@ import fs from 'fs';
 import healthRoutes from './modules/health/health.routes';
 import neuralNetworkRoutes from './modules/neural-network/neural-network.routes';
 
-dotenv.config();
+//dotenv.config();
 
 const app = express();
 app.use(cors());
