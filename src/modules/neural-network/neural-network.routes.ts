@@ -1,10 +1,31 @@
 import { Router } from 'express';
 import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
 import { uploadFile,getAllModels,getModelById } from './neural-network.controller';
 
 const router = Router();
 
-const upload = multer({ dest: 'uploads/' }); // temporalmente en local
+// ✅ Usar /tmp para almacenamiento temporal en AWS Lambda
+const tempUploadDir = '/tmp/uploads';
+
+// ✅ Crear el directorio si no existe
+if (!fs.existsSync(tempUploadDir)) {
+  fs.mkdirSync(tempUploadDir, { recursive: true });
+}
+
+// ✅ Configurar multer para guardar en /tmp/uploads
+const storage = multer.diskStorage({
+  destination: function (_req, _file, cb) {
+    cb(null, tempUploadDir);
+  },
+  filename: function (_req, file, cb) {
+    // Mantener el nombre original o puedes renombrar si prefieres
+    cb(null, Date.now() + '-' + file.originalname);
+  },
+});
+
+const upload = multer({ storage }); // temporalmente en local
 
 /**
  * @openapi
