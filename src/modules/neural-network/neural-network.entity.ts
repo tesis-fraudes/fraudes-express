@@ -22,9 +22,13 @@ export class NeuralNetwork {
   @Column()
   status!: string;
 
-  @CreateDateColumn({ name: 'create_at' })
-  createAt!: Date;
-
   @Column({ name: 'url_file' })
   urlFile!: string;
+
+  @Column({ name: 'created_by' })
+  createdBy!: string;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createAt!: Date;
+  
 }
