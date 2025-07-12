@@ -1,22 +1,20 @@
 FROM public.ecr.aws/lambda/nodejs:20
 
+# 1. Crear carpeta de trabajo
 WORKDIR /app
 
-# Instalar dependencias
-COPY package*.json ./
-RUN npm install
-
-# Copiar código y compilar
+# 2. Copiar todo el proyecto
 COPY . .
-RUN npm run build
 
-# ⚠️ Copiar solo el archivo lambda.js a la raíz donde Lambda lo espera
-COPY dist/lambda.js /var/task/lambda.js
-COPY dist/app.js /var/task/app.js            # si tu app.ts es requerido
-COPY dist/config /var/task/config            # si tu ormconfig está separado
-COPY dist/modules /var/task/modules          # tus rutas y entidades
+# 3. Instalar dependencias y compilar
+RUN npm install && npm run build
 
-# Opcional: Swagger si lo sirves desde disco
+# 4. Copiar el contenido de dist al directorio /var/task
+#    Lambda requiere los archivos directamente ahí
+RUN cp -r dist/* /var/task
+
+# 5. Copiar swagger.json si es necesario
 COPY swagger.json /var/task/swagger.json
 
+# 6. Definir el handler
 CMD ["lambda.lambdaHandler"]
