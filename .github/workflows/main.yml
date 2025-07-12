@@ -1,0 +1,47 @@
+name: Deploy Node.js Lambda
+
+on:
+  push:
+    branches: [main]  # o tu rama principal
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile TypeScript
+        run: npm run build  # asegúrate que "build" corre tsc
+
+      - name: Copy package.json y node_modules a dist
+        run: |
+          cp package.json dist/
+          cp -r node_modules dist/
+
+      - name: Zip Lambda function
+        run: |
+          cd dist
+          zip -r ../function.zip .
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to AWS Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+            --zip-file fileb://function.zip
