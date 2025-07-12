@@ -20,16 +20,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate Swagger JSON
+        run: npx ts-node scripts/generate-swagger.ts
+
       - name: Compile TypeScript
         run: npm run build  # asegúrate que "build" corre tsc
+
+      - name: Copy swagger.json to dist
+        run: cp swagger.json dist/
 
       - name: Copy package.json y node_modules a dist
         run: |
           cp package.json dist/
           cp -r node_modules dist/
-
-      - name: Generate Swagger JSON
-        run: npx ts-node scripts/generate-swagger.ts
 
       - name: Zip Lambda function
         run: |
