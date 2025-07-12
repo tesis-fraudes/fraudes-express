@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import { NeuralNetwork } from '../modules/neural-network/neural-network.entity';
 import dotenv from 'dotenv';
+dotenv.config();
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
