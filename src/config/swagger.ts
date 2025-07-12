@@ -1,3 +1,5 @@
+// scripts/generate-swagger.ts
+import fs from 'fs';
 import swaggerJSDoc from 'swagger-jsdoc';
 
 const swaggerDefinition = {
@@ -12,10 +14,16 @@ const swaggerDefinition = {
       url: 'https://fd6bat803l.execute-api.us-east-1.amazonaws.com',
       description: 'Servidor de producción',
     },
-  ]
+  ],
 };
 
-export const swaggerSpec = swaggerJSDoc({
+const options = {
   swaggerDefinition,
-  apis: ['dist/modules/**/*.js'], // <- escanea tus módulos para los comentarios JSDoc
-});
+  apis: ['src/modules/**/*.ts'], // ✅ Usa los archivos fuente
+};
+
+const swaggerSpec = swaggerJSDoc(options);
+
+// 📦 Guarda el JSON generado
+fs.writeFileSync('swagger.json', JSON.stringify(swaggerSpec, null, 2));
+console.log('✅ Swagger JSON generado con éxito.');
