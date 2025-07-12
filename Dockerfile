@@ -1,20 +1,25 @@
 FROM public.ecr.aws/lambda/nodejs:20
 
-# 1. Crear carpeta de trabajo
+# Crear carpeta de trabajo
 WORKDIR /app
 
-# 2. Copiar todo el proyecto
+# Copiar package y lock
+COPY package*.json ./
+
+# Instalar dependencias (incluye @vendia/serverless-express)
+RUN npm install
+
+# Copiar todo el código fuente
 COPY . .
 
-# 3. Instalar dependencias y compilar
-RUN npm install && npm run build
+# Compilar
+RUN npm run build
 
-# 4. Copiar el contenido de dist al directorio /var/task
-#    Lambda requiere los archivos directamente ahí
+# Copiar todo lo compilado a donde Lambda lo ejecutará
 RUN cp -r dist/* /var/task
 
-# 5. Copiar swagger.json si es necesario
+# Si usas swagger.json
 COPY swagger.json /var/task/swagger.json
 
-# 6. Definir el handler
+# Comando de arranque
 CMD ["lambda.lambdaHandler"]
