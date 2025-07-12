@@ -14,5 +14,5 @@ export const AppDataSource = new DataSource({
   ssl: {
     rejectUnauthorized: false,
   },
-  entities: [NeuralNetwork],
+  entities: [__dirname + '/../modules/**/*.entity.js'],
 });
