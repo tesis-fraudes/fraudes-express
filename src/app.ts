@@ -9,7 +9,7 @@ import cors from 'cors';
 import healthRoutes from './modules/health/health.routes';
 import neuralNetworkRoutes from './modules/neural-network/neural-network.routes';
 
-//dotenv.config();
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -23,8 +23,16 @@ app.use('/health', healthRoutes);
 app.use('/neural-network', neuralNetworkRoutes);
 
 // inicializar base de datos
-AppDataSource.initialize()
-  .then(() => console.log('🟢 Database connected'))
-  .catch((err) => console.error('🔴 Database error:', err));
+let isDbInitialized = false;
+
+if (!isDbInitialized) {
+  AppDataSource.initialize()
+    .then(() => {
+      console.log('🟢 Database connected');
+      isDbInitialized = true;
+    })
+    .catch((err) => console.error('🔴 Database error:', err));
+}
+
 
 export default app;

@@ -8,7 +8,7 @@ const upload = multer({ dest: 'uploads/' }); // temporalmente en local
 
 /**
  * @openapi
- * /neural-network/save:
+ * /neural-network/uploads:
  *   post:
  *     summary: Sube y guarda un modelo de red neuronal
  *     consumes:
