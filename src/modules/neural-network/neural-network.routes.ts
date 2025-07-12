@@ -6,7 +6,7 @@ import { uploadFile,getAllModels,getModelById } from './neural-network.controlle
 
 const router = Router();
 
-// ✅ Usar /tmp para almacenamiento temporal en AWS Lambda
+// ✅ Usar /tmp para almacenamiento temporal en AWS Lambda / test
 const tempUploadDir = '/tmp/uploads';
 
 // ✅ Crear el directorio si no existe
