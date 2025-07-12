@@ -33,14 +33,14 @@ jobs:
 
       - name: Tag image for ECR
         run: |
-          docker tag fraudes-lambda:${{ env.SHA_SHORT }} ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/fraudes-lambda:${{ env.SHA_SHORT }}
+          docker tag fraudes-lambda:${{ env.SHA_SHORT }} ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/fraudes-express:${{ env.SHA_SHORT }}
 
       - name: Push image to ECR
         run: |
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/fraudes-lambda:${{ env.SHA_SHORT }}
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/fraudes-express:${{ env.SHA_SHORT }}
 
       - name: Update Lambda with new image
         run: |
           aws lambda update-function-code \
             --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
-            --image-uri ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/fraudes-lambda:${{ env.SHA_SHORT }}
+            --image-uri ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/fraudes-express:${{ env.SHA_SHORT }}
