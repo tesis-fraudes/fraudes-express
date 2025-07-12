@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import { NeuralNetwork } from '../modules/neural-network/neural-network.entity';
 import dotenv from 'dotenv';
+import path from 'path';
 //dotenv.config();
 
 export const AppDataSource = new DataSource({
@@ -14,5 +15,5 @@ export const AppDataSource = new DataSource({
   ssl: {
     rejectUnauthorized: false,
   },
-  entities: [__dirname + '/../modules/**/*.entity.js'],
+  entities: [path.join(__dirname, '../modules/**/*.entity.js')],
 });
