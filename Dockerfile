@@ -10,7 +10,5 @@ COPY . .
 RUN npm run build
 # Trabajar desde dist
 WORKDIR /app/dist
-# Copiar swagger y entorno si aplica
-COPY swagger.json ./dist/
 
 CMD [ "lambda.lambdaHandler" ]
