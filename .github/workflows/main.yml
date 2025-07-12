@@ -1,4 +1,4 @@
-name: Deploy Node.js Lambda
+name: Deploy Node.js Lambda with Docker
 
 on:
   push:
@@ -12,44 +12,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      # 🔥 Limpieza total para evitar router y dependencias coladas
-      - name: Clean previous builds and dependencies
-        run: |
-          rm -rf node_modules
-          rm -rf dist
-          rm -f package-lock.json
-
-      - name: Install dependencies cleanly
-        run: npm install
-
-      - name: Generate Swagger JSON
-        run: npx ts-node scripts/generate-swagger.ts
-
-      - name: Compile TypeScript
-        run: npm run build
-
-      - name: Copy swagger.json to dist
-        run: cp swagger.json dist/
-
-      # ✅ Solo copiar node_modules limpio a dist
-      - name: Copy package.json and node_modules to dist
-        run: |
-          mkdir -p dist/node_modules
-          cp -r node_modules/* dist/node_modules/
-          cp package.json dist/
-
-      # ✅ Verificación opcional (solo en debug)
-      - name: Check that "router" is not in ZIP
-        run: |
-          cd dist
-          zip -r ../function.zip .
-          unzip -l ../function.zip | grep router || echo "✅ No router found"
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -57,8 +19,28 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Deploy to AWS Lambda
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Extract short commit SHA
+        id: vars
+        run: echo "SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Build Docker image
+        run: |
+          docker build -t fraudes-lambda:${{ env.SHA_SHORT }} .
+
+      - name: Tag image for ECR
+        run: |
+          docker tag fraudes-lambda:${{ env.SHA_SHORT }} ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/fraudes-lambda:${{ env.SHA_SHORT }}
+
+      - name: Push image to ECR
+        run: |
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/fraudes-lambda:${{ env.SHA_SHORT }}
+
+      - name: Update Lambda with new image
         run: |
           aws lambda update-function-code \
             --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
-            --zip-file fileb://function.zip
+            --image-uri ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/fraudes-lambda:${{ env.SHA_SHORT }}

@@ -1,0 +1,96 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Predicción de Fraudes",
+    "version": "1.0.0",
+    "description": "Documentación de la API para gestión de modelos de predicción de fraudes"
+  },
+  "servers": [
+    {
+      "url": "https://fd6bat803l.execute-api.us-east-1.amazonaws.com",
+      "description": "Servidor de producción"
+    }
+  ],
+  "paths": {
+    "/neural-network/uploads": {
+      "post": {
+        "summary": "Sube y guarda un modelo de red neuronal",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file",
+                  "modelo",
+                  "version",
+                  "accuracy"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "modelo": {
+                    "type": "string"
+                  },
+                  "version": {
+                    "type": "string"
+                  },
+                  "accuracy": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Modelo guardado exitosamente"
+          }
+        }
+      }
+    },
+    "/neural-network": {
+      "get": {
+        "summary": "Lista todos los modelos de red neuronal",
+        "responses": {
+          "200": {
+            "description": "Lista de modelos"
+          }
+        }
+      }
+    },
+    "/neural-network/{id}": {
+      "get": {
+        "summary": "Obtiene un modelo por su ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID del modelo"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Modelo encontrado"
+          },
+          "404": {
+            "description": "No encontrado"
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "tags": []
+}
