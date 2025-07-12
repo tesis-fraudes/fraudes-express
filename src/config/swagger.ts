@@ -9,13 +9,13 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'https://fraudes-express-production.up.railway.app',
+      url: 'https://fd6bat803l.execute-api.us-east-1.amazonaws.com',
       description: 'Servidor de producción',
     },
-  ],
+  ]
 };
 
 export const swaggerSpec = swaggerJSDoc({
   swaggerDefinition,
-  apis: ['src/modules/**/*.ts'], // <- escanea tus módulos para los comentarios JSDoc
+  apis: ['dist/modules/**/*.js'], // <- escanea tus módulos para los comentarios JSDoc
 });
