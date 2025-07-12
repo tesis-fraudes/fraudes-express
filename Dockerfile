@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/nodejs20.x
+FROM public.ecr.aws/lambda/nodejs:20
 
 WORKDIR /app
 
