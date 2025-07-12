@@ -1,8 +1,10 @@
 import { DataSource } from 'typeorm';
-import { NeuralNetwork } from '../modules/neural-network/neural-network.entity';
-import dotenv from 'dotenv';
 import path from 'path';
-//dotenv.config();
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+console.log('🧭 Cargando entidades desde:', path.join(__dirname, '../modules/**/*.entity.js'));
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -11,9 +13,10 @@ export const AppDataSource = new DataSource({
   username: process.env.PGUSER,
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,
-  synchronize: false, // solo para desarrollo
+  synchronize: false,
   ssl: {
     rejectUnauthorized: false,
   },
+  // 👇 Carga dinámica compatible con Lambda/Docker
   entities: [path.join(__dirname, '../modules/**/*.entity.js')],
 });

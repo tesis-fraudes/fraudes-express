@@ -39,17 +39,12 @@ app.get('/docs/swagger.json', (_req, res) => {
 app.use('/health', healthRoutes);
 app.use('/neural-network', neuralNetworkRoutes);
 
-// inicializar base de datos
-let isDbInitialized = false;
-
-if (!isDbInitialized) {
-  AppDataSource.initialize()
-    .then(() => {
-      console.log('🟢 Database connected');
-      isDbInitialized = true;
-    })
-    .catch((err) => console.error('🔴 Database error:', err));
-}
+AppDataSource.initialize()
+  .then(() => {
+    console.log('🟢 Database connected');
+    console.log('✅ Entidades cargadas:', AppDataSource.entityMetadatas.map(e => e.name));
+  })
+  .catch((err) => console.error('🔴 Database error:', err));
 
 
 export default app;
