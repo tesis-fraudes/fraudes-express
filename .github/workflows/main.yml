@@ -27,6 +27,10 @@ jobs:
         id: vars
         run: echo "SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
+         # ✅ Crear archivo .env vacío
+      - name: Create empty .env file
+        run: touch .env
+
       - name: Build Docker image
         run: |
           docker build -t fraudes-lambda:${{ env.SHA_SHORT }} .
