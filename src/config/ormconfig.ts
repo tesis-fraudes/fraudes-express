@@ -10,7 +10,7 @@ import NeuralNetwork from '../modules/neural-network/neural-network.entity';
 //const __dirname = dirname(__filename);
 const entityFiles = globSync(path.join(__dirname, '../modules/**/*.entity.js'));
 
-
+const entities = '/var/task/modules/neural-network/neural-network.entity.js';
 export const AppDataSource = new DataSource({
   type: 'postgres',
   host: process.env.PGHOST,
@@ -22,6 +22,6 @@ export const AppDataSource = new DataSource({
   ssl: {
     rejectUnauthorized: false,
   },
-   entities: [NeuralNetwork],
+   entities: [entities],
 });
 

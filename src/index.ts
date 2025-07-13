@@ -31,7 +31,8 @@ export default class Server {
   }
 
   async dbConnection() {
-    const entities = globSync(path.join(__dirname, '../modules/**/*.entity.js'));
+    //const entities = globSync(path.join(__dirname, '../modules/**/*.entity.js'));
+    const entities = '/var/task/modules/neural-network/neural-network.entity.js';
     
     console.log('🧭 Cargando entidades desde:', entities);
     
@@ -49,7 +50,7 @@ export default class Server {
         rejectUnauthorized: false,
       },
        //entities: [NeuralNetwork],
-       entities: entities
+       entities: [entities]
     });
     
     
