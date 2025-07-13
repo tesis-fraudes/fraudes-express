@@ -1,27 +1,13 @@
-FROM public.ecr.aws/lambda/nodejs:20
-
-# Crear carpeta de trabajo
+# Stage 1: Build
+FROM node:20 AS build
+ADD . /app
 WORKDIR /app
+RUN npm install && npm run build 
 
-# Copiar archivos y lock
-COPY package*.json ./
-
-# Instalar dependencias
-RUN npm install
-
-# Copiar todo el código fuente
-COPY . .
-
-# Compilar TypeScript
-RUN npm run build
-
-# ✅ Copiar todo dist y node_modules al path correcto para Lambda
-RUN cp -r dist/* /var/task \
- && cp -r node_modules /var/task \
- && cp package*.json /var/task
-
-# Copiar swagger.json si lo usas
-COPY swagger.json /var/task/swagger.json
-
-# Handler
-CMD ["lambda.lambdaHandler"]
+FROM public.ecr.aws/lambda/nodejs:20 AS deploy
+RUN ls && pwd && pwd
+COPY --from=build /app/build ${LAMBDA_TASK_ROOT}
+COPY --from=build /app/package.json ${LAMBDA_TASK_ROOT}
+COPY --from=build /app/node_modules ${LAMBDA_TASK_ROOT}
+COPY --from=build /app/.env ${LAMBDA_TASK_ROOT}
+CMD ["build/server.handler"]
