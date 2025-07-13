@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import AWS from 'aws-sdk';
 import { AppDataSource } from '../../config/ormconfig'; // ajusta ruta
-import { NeuralNetwork } from './neural-network.entity';
+import NeuralNetwork from './neural-network.entity';
 
 // AWS.config.update({
 //   accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY,
