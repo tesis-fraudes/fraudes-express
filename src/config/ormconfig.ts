@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+import { globSync } from 'glob';
 import * as path from 'path';
 import NeuralNetwork from '../modules/neural-network/neural-network.entity';
 
@@ -7,7 +8,7 @@ import NeuralNetwork from '../modules/neural-network/neural-network.entity';
 //console.log('🧭 Cargando entidades desde:', path.join(__dirname, '../modules/**/*.entity.js'));
 //const __filename = fileURLToPath(import.meta.url);
 //const __dirname = dirname(__filename);
-
+const entityFiles = globSync(path.join(__dirname, '../modules/**/*.entity.js'));
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -21,6 +22,6 @@ export const AppDataSource = new DataSource({
     rejectUnauthorized: false,
   },
    //entities: [NeuralNetwork],
-   entities: [__dirname + '/../**/*.entity.{js,ts}']
+   entities: entityFiles
 });
 
