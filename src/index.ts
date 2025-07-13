@@ -1,5 +1,8 @@
 import express, { Application } from "express";
+import { DataSource } from 'typeorm';
+import { globSync } from 'glob';
 import cors, { CorsOptions } from "cors";
+import * as path from 'path';
 // import ClientRoutes from "./routes/client.routes";
 // import HealthRoutes from "./routes/health.routes";
 // import sequelize from "./database/config";
@@ -9,8 +12,8 @@ import cors, { CorsOptions } from "cors";
 
 import healthRoutes from './modules/health/health.routes';
 import neuralNetworkRoutes from './modules/neural-network/neural-network.routes';
+import NeuralNetwork from "./modules/neural-network/neural-network.entity";
 
-import { AppDataSource } from './config/ormconfig';
 
 export default class Server {
   private app: Application;
@@ -20,6 +23,37 @@ export default class Server {
     this.port = "3000";
     this.app = app;
 
+    this.dbConnection();
+
+    this.middlewares();
+
+    this.routes();
+  }
+
+  async dbConnection() {
+    const entities = globSync(path.join(__dirname, '../modules/**/*.entity.js'));
+    
+    console.log('🧭 Cargando entidades desde:', entities);
+    
+    console.log(__dirname);
+
+    const AppDataSource = new DataSource({
+      type: 'postgres',
+      host: process.env.PGHOST,
+      port: Number(process.env.PGPORT),
+      username: process.env.PGUSER,
+      password: process.env.PGPASSWORD,
+      database: process.env.PGDATABASE,
+      synchronize: false,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+       //entities: [NeuralNetwork],
+       entities: entities
+    });
+    
+    
+
     AppDataSource.initialize()
       .then(() => {
         console.log('🟢 Database connected');
@@ -27,22 +61,7 @@ export default class Server {
       })
       .catch((err) => console.error('🔴 Database error:', err));
 
-    console.log(
-      '✅ Entidades cargadas:',
-      AppDataSource.entityMetadatas.map(e => e.name)
-    );
-
-    this.middlewares();
-
-    this.routes();
   }
-
-  // async dbConnection() {
-  //   sequelize
-  //     .authenticate()
-  //     .then(() => console.log("Database connected!"))
-  //     .catch((err) => console.error("Error: ", err));
-  // }
 
   private middlewares() {
     const corsOptions: CorsOptions = {
