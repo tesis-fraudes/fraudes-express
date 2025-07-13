@@ -20,6 +20,7 @@ export const AppDataSource = new DataSource({
   ssl: {
     rejectUnauthorized: false,
   },
-   entities: [NeuralNetwork],
+   //entities: [NeuralNetwork],
+   entities: [__dirname + '/../**/*.entity.{js,ts}']
 });
 
