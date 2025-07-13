@@ -27,6 +27,11 @@ export default class Server {
       })
       .catch((err) => console.error('🔴 Database error:', err));
 
+    console.log(
+      '✅ Entidades cargadas:',
+      AppDataSource.entityMetadatas.map(e => e.name)
+    );
+
     this.middlewares();
 
     this.routes();
@@ -53,7 +58,7 @@ export default class Server {
 
   private routes() {
     this.app.use(`/health`, healthRoutes);
-    this.app.use(`/neural-networks`, neuralNetworkRoutes);
+    this.app.use(`/neural-network`, neuralNetworkRoutes);
     //this.app.use(`/${API_PREFIX}/v1/winners`, new WinnerRoutes().router);
     //this.app.use(`/${API_PREFIX}/v1/events`, new EventRoutes().router);
   }

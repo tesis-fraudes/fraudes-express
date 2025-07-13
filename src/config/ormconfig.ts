@@ -1,13 +1,13 @@
 import { DataSource } from 'typeorm';
-import { fileURLToPath } from 'url';
 import * as path from 'path';
-import dotenv from 'dotenv';
+import NeuralNetwork from '../modules/neural-network/neural-network.entity';
 
 //dotenv.config();
 
 //console.log('🧭 Cargando entidades desde:', path.join(__dirname, '../modules/**/*.entity.js'));
 //const __filename = fileURLToPath(import.meta.url);
 //const __dirname = dirname(__filename);
+
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -20,11 +20,6 @@ export const AppDataSource = new DataSource({
   ssl: {
     rejectUnauthorized: false,
   },
-  // 👇 Carga dinámica compatible con Lambda/Docker
-   entities: [path.join(__dirname, '../modules/neural-network/neural-network.entity.js')],
+   entities: [NeuralNetwork],
 });
 
-console.log(
-  '✅ Entidades cargadas:',
-  AppDataSource.entityMetadatas.map(e => e.name)
-);

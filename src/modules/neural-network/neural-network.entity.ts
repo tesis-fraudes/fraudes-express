@@ -2,13 +2,13 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
+  CreateDateColumn
 } from 'typeorm';
 
 @Entity('tbl_neuralnetwork')
-export class NeuralNetwork {
+export default class NeuralNetwork {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id!: number; // <- esto dice a TS: “Confía, lo seteará TypeORM”
 
   @Column()
   modelo!: string;
@@ -30,5 +30,4 @@ export class NeuralNetwork {
 
   @CreateDateColumn({ name: 'created_at' })
   createAt!: Date;
-  
 }
