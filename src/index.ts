@@ -1,18 +1,9 @@
 import express, { Application } from "express";
-import { DataSource } from 'typeorm';
-import { globSync } from 'glob';
 import cors, { CorsOptions } from "cors";
-import * as path from 'path';
-// import ClientRoutes from "./routes/client.routes";
-// import HealthRoutes from "./routes/health.routes";
-// import sequelize from "./database/config";
-// import WinnerRoutes from "./routes/winner.routes";
-// import { API_PREFIX } from "./constants/global.constant";
-// import EventRoutes from "./routes/event.routes";
+import { sequelize } from "./config/sequelize";
 
 import healthRoutes from './modules/health/health.routes';
 import neuralNetworkRoutes from './modules/neural-network/neural-network.routes';
-import NeuralNetwork from "./modules/neural-network/neural-network.entity";
 
 
 export default class Server {
@@ -31,36 +22,14 @@ export default class Server {
   }
 
   async dbConnection() {
-    //const entities = globSync(path.join(__dirname, '../modules/**/*.entity.js'));
-    const entities = '/var/task/src/modules/neural-network/neural-network.entity.js';
     
-    console.log('🧭 Cargando entidades desde:', entities);
-    
-    console.log(__dirname);
-
-    const AppDataSource = new DataSource({
-      type: 'postgres',
-      host: process.env.PGHOST,
-      port: Number(process.env.PGPORT),
-      username: process.env.PGUSER,
-      password: process.env.PGPASSWORD,
-      database: process.env.PGDATABASE,
-      synchronize: false,
-      ssl: {
-        rejectUnauthorized: false,
-      },
-       //entities: [NeuralNetwork],
-       entities: [entities]
-    });
-    
-    
-
-    AppDataSource.initialize()
-      .then(() => {
-        console.log('🟢 Database connected');
-        console.log('✅ Entidades cargadas:', AppDataSource.entityMetadatas.map(e => e.name));
-      })
-      .catch((err) => console.error('🔴 Database error:', err));
+    try {
+      await sequelize.authenticate();
+      console.log('🟢 Database connected');
+      await sequelize.sync(); // ⚠️ no uses esto en prod si no quieres que cree o altere tablas
+    } catch (error) {
+      console.error('🔴 Database error:', error);
+    }
 
   }
 
@@ -79,8 +48,6 @@ export default class Server {
   private routes() {
     this.app.use(`/health`, healthRoutes);
     this.app.use(`/neural-network`, neuralNetworkRoutes);
-    //this.app.use(`/${API_PREFIX}/v1/winners`, new WinnerRoutes().router);
-    //this.app.use(`/${API_PREFIX}/v1/events`, new EventRoutes().router);
   }
 
   listen() {

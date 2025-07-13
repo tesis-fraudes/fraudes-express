@@ -1,3 +1,4 @@
+// src/modules/neural-network/neural-network.model.ts
 import { Table, Column, Model, PrimaryKey, AutoIncrement, CreatedAt } from 'sequelize-typescript';
 
 @Table({ tableName: 'tbl_neuralnetwork', timestamps: false })

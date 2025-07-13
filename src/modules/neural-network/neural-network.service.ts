@@ -1,26 +1,13 @@
 import fs from 'fs';
-import path from 'path';
 import AWS from 'aws-sdk';
-import { AppDataSource } from '../../config/ormconfig'; // ajusta ruta
-import NeuralNetwork from './neural-network.entity';
-
-// AWS.config.update({
-//   accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY,
-//   secretAccessKey: process.env.CLOUDFLARE_SECRET_KEY,
-//   endpoint: process.env.CLOUDFLARE_S3_ENDPOINT, // por ej: https://<accountid>.r2.cloudflarestorage.com
-//   region: 'auto',
-//   s3ForcePathStyle: true,
-// });
+import NeuralNetwork from './neural-network.model';
 
 const s3 = new AWS.S3({
   accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY,
   secretAccessKey: process.env.CLOUDFLARE_SECRET_KEY,
-  endpoint: process.env.CLOUDFLARE_S3_ENDPOINT, // ✅ correcto aquí
-  region: 'auto',
+  endpoint: process.env.CLOUDFLARE_S3_ENDPOINT,
   s3ForcePathStyle: true,
 });
-
-//const s3 = new AWS.S3();
 
 const bucketName = process.env.CLOUDFLARE_BUCKET_NAME;
 
@@ -39,13 +26,7 @@ const procesarYGuardar = async ({
   accuracy,
   status,
 }: UploadInput) => {
-  const repo = AppDataSource.getRepository(NeuralNetwork);
-  await repo.createQueryBuilder()
-    .update(NeuralNetwork)
-    .set({ status: 'Inactivo' })
-    //.where('status = :status', { status: 'Activo' })
-    .execute();
-
+  await NeuralNetwork.update({ status: 'Inactivo' }, { where: {} });
   const fileStream = fs.createReadStream(file.path);
   const key = `modelos/${Date.now()}_${file.originalname}`;
 
@@ -57,31 +38,26 @@ const procesarYGuardar = async ({
   };
 
   const uploadResult = await s3.upload(uploadParams).promise();
-  fs.unlinkSync(file.path); // limpiar archivo local
+  fs.unlinkSync(file.path);
 
-  
-
-  const entity = repo.create({
+  const entity = await NeuralNetwork.create({
     modelo,
     version,
     accuracy,
     status,
     urlFile: uploadResult.Location,
+    createdBy: 'system',
   });
 
-  return await repo.save(entity);
+  return entity;
 };
 
 const getAll = async () => {
-  return await AppDataSource.getRepository(NeuralNetwork).find({
-    order: { createAt: 'DESC' },
-  });
+  return await NeuralNetwork.findAll({ order: [['createAt', 'DESC']] });
 };
 
 const getById = async (id: number) => {
-  return await AppDataSource.getRepository(NeuralNetwork).findOne({
-    where: { id },
-  });
+  return await NeuralNetwork.findByPk(id);
 };
 
 export default { procesarYGuardar, getAll, getById };
