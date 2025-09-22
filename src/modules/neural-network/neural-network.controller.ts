@@ -95,13 +95,28 @@ export const getActiveModel = async (req: Request, res: Response, next: NextFunc
 
 export const activateModel = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // 1) Normaliza body:
+    const parseJSON = (s: unknown) => {
+      if (typeof s !== 'string') return s;
+      try { return JSON.parse(s); } catch { return s; }
+    };
+
+    // body puede venir como objeto, como string json, o como { body: '...json...' }
+    const b1: any = parseJSON(req.body);
+    const b2: any = parseJSON(b1?.body) ?? b1;  // por si API GW lo mete en .body
+
+    // 2) prioriza body -> query -> params
     const rawId =
-      (req.body && (req.body.id ?? req.body.modelId)) ??
-      (req.query && (req.query.id as string)) ??
+      (b2?.id ?? b2?.modelId) ??
+      (req.query?.id as string | undefined) ??
       req.params?.id;
 
-    const id = Number(rawId);
+    // 3) convierte a número
+    const id = rawId != null && rawId !== '' ? Number(rawId) : NaN;
     if (!Number.isFinite(id)) {
+      // DEBUG opcional para ver realmente qué llega:
+      // console.log('CT:', req.headers['content-type']); console.log('req.body:', req.body);
+      // console.log('b1:', b1); console.log('b2:', b2); console.log('rawId:', rawId);
       return res.status(400).json({ message: 'Falta el id del modelo' });
     }
 

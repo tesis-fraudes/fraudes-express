@@ -46,17 +46,17 @@ export default class Server {
 
     // Normaliza body cuando API Gateway lo pasa como string
     this.app.use((req, _res, next) => {
-      const ct = (req.headers['content-type'] || '').toString().toLowerCase();
-      // si viene como JSON y el body es string, intenta parsear
-      if (ct.includes('application/json') && typeof req.body === 'string') {
-        try {
-          req.body = JSON.parse(req.body || '{}');
-        } catch (e) {
-          // si falla el parseo, lo dejamos como string
-        }
+      const ct = String(req.headers['content-type'] || '').toLowerCase();
+      if (typeof req.body === 'string') {
+        try { req.body = JSON.parse(req.body); } catch { /* ignore */ }
+      }
+      // a veces llega como { body: 'json-string' }
+      if (req.body && typeof (req.body as any).body === 'string') {
+        try { (req.body as any).body = JSON.parse((req.body as any).body); } catch { /* ignore */ }
       }
       next();
     });
+
   }
 
   private routes() {

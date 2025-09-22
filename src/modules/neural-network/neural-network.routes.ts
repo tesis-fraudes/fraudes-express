@@ -73,6 +73,10 @@ router.post('/upload', upload.single('file'), uploadFile);
  */
 router.get('/', getAllModels);
 
+router.get('/active', getActiveModel);
+
+router.post('/active', activateModel);
+
 /**
  * @openapi
  * /neural-network/{id}:
@@ -95,8 +99,6 @@ router.get('/:id', getModelById);
 
 router.post('/train', upload.single('file'), train);
 
-router.get('/active', getActiveModel);
 
-router.post('/active', activateModel);
 
 export default router;
