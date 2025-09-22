@@ -114,8 +114,8 @@ const getById = async (id: number) => {
 async function getActiveModel() {
   // devuelve solo 1 modelo activo
   const model = await NeuralNetwork.findOne({
-    where: { status: 1 },
-    order: [['createdAt', 'DESC']], // opcional: por si hubiera más de 1
+    where: { status: 1 }
+    //order: [['createdAt', 'DESC']], // opcional: por si hubiera más de 1
   });
   return model;
 }
