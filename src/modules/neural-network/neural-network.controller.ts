@@ -95,13 +95,18 @@ export const getActiveModel = async (req: Request, res: Response, next: NextFunc
 
 export const activateModel = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { id } = req.body;
-    if (!id) return res.status(400).json({ message: 'Falta el id del modelo' });
+    const rawId =
+      (req.body && (req.body.id ?? req.body.modelId)) ??
+      (req.query && (req.query.id as string)) ??
+      req.params?.id;
 
-    const model = await redNeuronalService.activateModel(Number(id));
-    if (!model) {
-      return res.status(404).json({ message: 'Modelo no encontrado' });
+    const id = Number(rawId);
+    if (!Number.isFinite(id)) {
+      return res.status(400).json({ message: 'Falta el id del modelo' });
     }
+
+    const model = await redNeuronalService.activateModel(id);
+    if (!model) return res.status(404).json({ message: 'Modelo no encontrado' });
 
     res.json({ message: 'Modelo activado correctamente', model });
   } catch (err) {
