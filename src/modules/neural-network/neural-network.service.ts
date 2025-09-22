@@ -111,4 +111,26 @@ const getById = async (id: number) => {
   return await NeuralNetwork.findByPk(id);
 };
 
-export default { procesarYGuardar, getAll, getById, train };
+async function getActiveModel() {
+  // devuelve solo 1 modelo activo
+  const model = await NeuralNetwork.findOne({
+    where: { status: 1 },
+    order: [['createdAt', 'DESC']], // opcional: por si hubiera más de 1
+  });
+  return model;
+}
+
+async function activateModel(id: number) {
+  // primero desactiva todos
+  await NeuralNetwork.update({ status: 2 }, { where: {} });
+
+  // luego activa el seleccionado
+  const [_, [updated]] = await NeuralNetwork.update(
+    { status: 1 },
+    { where: { id }, returning: true }
+  );
+
+  return updated;
+}
+
+export default { procesarYGuardar, getAll, getById, train, getActiveModel, activateModel };

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
-import { uploadFile,getAllModels,getModelById, train  } from './neural-network.controller';
+import { uploadFile,getAllModels,getModelById, train, getActiveModel, activateModel   } from './neural-network.controller';
 
 const router = Router();
 
@@ -94,4 +94,9 @@ router.get('/', getAllModels);
 router.get('/:id', getModelById);
 
 router.post('/train', upload.single('file'), train);
+
+router.get('/active', getActiveModel);
+
+router.post('/active', activateModel);
+
 export default router;

@@ -80,3 +80,31 @@ export const getModelById = async (req: Request, res: Response, next: NextFuncti
     next(err);
   }
 };
+
+export const getActiveModel = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const model = await redNeuronalService.getActiveModel();
+    if (!model) {
+      return res.status(404).json({ message: 'No hay modelo activo' });
+    }
+    res.json(model);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const activateModel = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ message: 'Falta el id del modelo' });
+
+    const model = await redNeuronalService.activateModel(Number(id));
+    if (!model) {
+      return res.status(404).json({ message: 'Modelo no encontrado' });
+    }
+
+    res.json({ message: 'Modelo activado correctamente', model });
+  } catch (err) {
+    next(err);
+  }
+};
