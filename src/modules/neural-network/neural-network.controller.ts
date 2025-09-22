@@ -1,6 +1,28 @@
 import { Request, Response, NextFunction } from 'express';
 import redNeuronalService from './neural-network.service';
 
+
+export const train = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const file = req.file; // multer.single('file')
+    const { modelName, userCode } = req.body;
+
+    if (!file) return next(new Error('Falta archivo CSV (campo "file")'));
+    if (!modelName) return next(new Error('Falta "modelName"'));
+    if (!userCode) return next(new Error('Falta "userCode"'));
+
+    const result = await redNeuronalService.train({
+      filePath: file.path,
+      modelName,
+      userCode,
+    });
+
+    res.status(201).json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const uploadFile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const file = req.file;
   const { modelo, version, accuracy, status } = req.body;
