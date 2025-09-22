@@ -1,6 +1,7 @@
 import express, { Application } from "express";
 import cors, { CorsOptions } from "cors";
 import { sequelize } from "./config/sequelize";
+import * as qs from 'querystring';
 
 import healthRoutes from './modules/health/health.routes';
 import neuralNetworkRoutes from './modules/neural-network/neural-network.routes';
@@ -47,13 +48,38 @@ export default class Server {
     // Normaliza body cuando API Gateway lo pasa como string
     this.app.use((req, _res, next) => {
       const ct = String(req.headers['content-type'] || '').toLowerCase();
-      if (typeof req.body === 'string') {
-        try { req.body = JSON.parse(req.body); } catch { /* ignore */ }
+
+      // 1) Si viene como Buffer, conviértelo a string
+      if (Buffer.isBuffer(req.body)) {
+        const raw = req.body.toString('utf8');
+
+        if (ct.includes('application/json')) {
+          try { req.body = JSON.parse(raw); } catch { req.body = {}; }
+        } else if (ct.includes('application/x-www-form-urlencoded')) {
+          req.body = qs.parse(raw);
+        } else {
+          // fallback: intenta JSON y si no, deja string
+          try { req.body = JSON.parse(raw); } catch { req.body = raw; }
+        }
       }
-      // a veces llega como { body: 'json-string' }
+
+      // 2) Si viene como string plano (algunas pasarelas lo hacen)
+      else if (typeof req.body === 'string') {
+        // intenta JSON; si no, intenta urlencoded; si no, deja string
+        try { req.body = JSON.parse(req.body); }
+        catch {
+          if (ct.includes('application/x-www-form-urlencoded')) {
+            req.body = qs.parse(req.body);
+          }
+        }
+      }
+
+      // 3) A veces llega como { body: 'json-string' } anidado
       if (req.body && typeof (req.body as any).body === 'string') {
-        try { (req.body as any).body = JSON.parse((req.body as any).body); } catch { /* ignore */ }
+        const inner = (req.body as any).body;
+        try { (req.body as any).body = JSON.parse(inner); } catch { /* ignore */ }
       }
+
       next();
     });
 
