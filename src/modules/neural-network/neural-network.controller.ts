@@ -115,8 +115,8 @@ export const activateModel = async (req: Request, res: Response, next: NextFunct
     const id = rawId != null && rawId !== '' ? Number(rawId) : NaN;
     if (!Number.isFinite(id)) {
       // DEBUG opcional para ver realmente qué llega:
-      // console.log('CT:', req.headers['content-type']); console.log('req.body:', req.body);
-      // console.log('b1:', b1); console.log('b2:', b2); console.log('rawId:', rawId);
+      console.log('CT:', req.headers['content-type']); console.log('req.body:', req.body);
+      console.log('b1:', b1); console.log('b2:', b2); console.log('rawId:', rawId);
       return res.status(400).json({ message: 'Falta el id del modelo' });
     }
 
