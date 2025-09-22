@@ -43,6 +43,20 @@ export default class Server {
     this.app.use(express.json());
 
     this.app.use(express.urlencoded({ extended: true }));
+
+    // Normaliza body cuando API Gateway lo pasa como string
+    this.app.use((req, _res, next) => {
+      const ct = (req.headers['content-type'] || '').toString().toLowerCase();
+      // si viene como JSON y el body es string, intenta parsear
+      if (ct.includes('application/json') && typeof req.body === 'string') {
+        try {
+          req.body = JSON.parse(req.body || '{}');
+        } catch (e) {
+          // si falla el parseo, lo dejamos como string
+        }
+      }
+      next();
+    });
   }
 
   private routes() {
