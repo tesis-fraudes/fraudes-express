@@ -78,7 +78,7 @@ const procesarYGuardar = async ({
   accuracy,
   status,
 }: UploadInput) => {
-  await NeuralNetwork.update({ status: 'Inactivo' }, { where: {} });
+  await NeuralNetwork.update({ status: 0 }, { where: {} });
   const fileStream = fs.createReadStream(file.path);
   const key = `modelos/${Date.now()}_${file.originalname}`;
 
@@ -92,15 +92,14 @@ const procesarYGuardar = async ({
   const uploadResult = await s3.upload(uploadParams).promise();
   fs.unlinkSync(file.path);
 
-  const entity = await NeuralNetwork.create({
-    modelo,
-    version,
-    accuracy,
-    status,
-    urlFile: uploadResult.Location,
-    createdBy: 'system',
-  });
+  // const entity = await NeuralNetwork.create({
+  //   modelo,
+  //   version,
+  //   urlFile: uploadResult.Location,
+  //   createdBy: 'system',
+  // });
 
+  const entity = null;
   return entity;
 };
 
