@@ -5,6 +5,7 @@ import * as qs from 'querystring';
 
 import healthRoutes from './modules/health/health.routes';
 import neuralNetworkRoutes from './modules/neural-network/neural-network.routes';
+import transactionRoutes from './modules/transaction/transaction.routes';
 
 
 export default class Server {
@@ -88,6 +89,7 @@ export default class Server {
   private routes() {
     this.app.use(`/health`, healthRoutes);
     this.app.use(`/neural-network`, neuralNetworkRoutes);
+    this.app.use('/transaction', transactionRoutes);
   }
 
   listen() {
