@@ -35,6 +35,15 @@ type PurchaseInput = {
   ip_address?: string;
 };
 
+function logSequelizeError(err: any) {
+  // Compatible con distintos tipos de errores de Sequelize
+  const parent = err?.parent || err?.original || {};
+  console.error('SEQUELIZE NAME:', err?.name);
+  console.error('PG CODE:', parent?.code);
+  console.error('PG DETAIL:', parent?.detail);
+  console.error('PG MESSAGE:', parent?.message || err?.message);
+}
+
 export async function purchase(data: PurchaseInput) {
   // 1) obtener modelo activo
   const active = await NeuralNetwork.findOne({ where: { status: 1 } });
@@ -46,32 +55,25 @@ export async function purchase(data: PurchaseInput) {
 
   try {
     // 2) crear transacción en estado PENDIENTE (0) para obtener id
-    try {
-      const trx = await Transaction.create({
-        businessId: data.business_id,
-        customerId: data.customer_id,
-        paymentId:  data.payment_id,
-        amount:     data.transaction_amount,
-        currency:   data.currency ?? 'USD',
-        hour:       data.transaction_hour,
-        isProxy:    !!Number(data.is_proxy),
-        distanceHomeShipping: Math.round(Number(data.distance_home_shipping)),
-        avgMonthlySpend: data.avg_monthly_spend,
-        previousFrauds: data.previous_frauds,
-        deviceType: data.device_type,
-        browser:    data.browser,
-        countryIp:  data.country_ip,
-        ipAddress:  data.ip_address,
-        modelId:    active.id,
-        status:     0, // pendiente
-        createdBy:  data.user_id,
-      }, { transaction: t });
-    } catch (err: any) {
-      console.error('PG CODE:', err?.parent?.code);
-      console.error('PG DETAIL:', err?.parent?.detail);
-      console.error('PG MESSAGE:', err?.parent?.message || err?.message);
-      throw err;
-    }
+    const trx = await Transaction.create({
+      businessId: data.business_id,
+      customerId: data.customer_id,
+      paymentId:  data.payment_id,
+      amount:     data.transaction_amount,
+      currency:   data.currency ?? 'USD',
+      hour:       data.transaction_hour,
+      isProxy:    !!Number(data.is_proxy),
+      distanceHomeShipping: Math.round(Number(data.distance_home_shipping)),
+      avgMonthlySpend: data.avg_monthly_spend,
+      previousFrauds: data.previous_frauds,
+      deviceType: data.device_type,
+      browser:    data.browser,
+      countryIp:  data.country_ip,
+      ipAddress:  data.ip_address,
+      modelId:    active.id,
+      status:     0, // pendiente
+      createdBy:  data.user_id,
+    }, { transaction: t });
     
 
     // 3) llamar API de predict (si falla, dejamos la transacción pendiente y salimos)
@@ -179,7 +181,10 @@ export async function purchase(data: PurchaseInput) {
       decision: newStatus,
     };
   } catch (err) {
-    await t.rollback();
+    // await t.rollback();
+    // throw err;
+    try { await t.rollback(); } catch {}
+    logSequelizeError(err);
     throw err;
   }
 }
