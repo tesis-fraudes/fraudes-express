@@ -1,7 +1,7 @@
 // src/modules/transaction/transaction.service.ts
 import axios from 'axios';
 import { Transaction as SequelizeTx } from 'sequelize';
-import { sequelize } from '../../config/sequelize'; // export default instance
+import  { sequelize } from '../../config/sequelize'; // export default instance
 import Transaction from './transaction.model';
 import Prediction from './prediction.model';
 import FraudEvent from './fraud-event.model';
