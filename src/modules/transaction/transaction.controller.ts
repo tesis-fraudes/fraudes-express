@@ -4,6 +4,13 @@ import * as service from './transaction.service';
 
 export const purchase = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // saca IP de headers (ALB / API Gateway) o socket
+    const xf = (req.headers['x-forwarded-for'] as string) || '';
+    const clientIp =
+      (xf.split(',')[0] || '').trim() ||
+      (req.headers['x-real-ip'] as string) ||
+      req.socket?.remoteAddress ||
+      '0.0.0.0';
     const body = req.body || {};
 
     // validaciones mínimas
@@ -32,7 +39,7 @@ export const purchase = async (req: Request, res: Response, next: NextFunction) 
       payment_method: String(body.payment_method || ''),
       card_country: String(body.card_country || ''),
       business_country: String(body.business_country || ''),
-      ip_address: body.ip_address,
+      ip_address: clientIp,
     });
 
     res.status(201).json(result);

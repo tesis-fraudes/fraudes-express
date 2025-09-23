@@ -69,7 +69,7 @@ export async function purchase(data: PurchaseInput) {
       deviceType: data.device_type,
       browser:    data.browser,
       countryIp:  data.country_ip,
-      ipAddress:  data.ip_address,
+      ipAddress: data.ip_address || '0.0.0.0',
       modelId:    active.id,
       status:     0, // pendiente
       createdBy:  data.user_id,
