@@ -106,16 +106,11 @@ export async function purchase(data: PurchaseInput) {
         ],
       };
 
-      console.log(payload)
-
       const { data: resp } = await axios.post(PREDICT_URL, payload, {
         headers: { 'Content-Type': 'application/json' },
         timeout: 1000 * 20,
       });
 
-      // adapta a tu respuesta real:
-      // esperado algo como { predictions: [{ fraud_score, class, prediction, fraud_probability }] }
-      console.log(resp)
       const p0 = resp?.results?.[0] ?? resp?.results?.[0] ?? resp ?? {};
       fraudScore = Number(p0.fraud_score);
       predClass = p0.class;
@@ -162,7 +157,7 @@ export async function purchase(data: PurchaseInput) {
       await FraudEvent.create({
         transactionId: trx.id,
         userId: data.user_id,
-        status: 3,
+        status: 1,
       }, { transaction: t });
     }
     if (newStatus === 4) {
@@ -170,7 +165,7 @@ export async function purchase(data: PurchaseInput) {
       await FraudEvent.create({
         transactionId: trx.id,
         userId: data.user_id,
-        status: 4,
+        status: 1,
         observation: `reject> score=${fraudScore}, model_id=${active.id}`,
         result: 'rejected_by_model',
       }, { transaction: t });
