@@ -1,8 +1,9 @@
 // src/modules/transaction/fraud-event.model.ts
 import {
   Table, Column, Model, PrimaryKey, AutoIncrement,
-  AllowNull, DataType, CreatedAt
+  AllowNull, DataType, CreatedAt, BelongsTo, ForeignKey 
 } from 'sequelize-typescript';
+import Transaction from './transaction.model';
 import { Optional } from 'sequelize';
 
 export interface FraudEventAttrs {
@@ -32,7 +33,10 @@ export default class FraudEvent
 {
   @PrimaryKey @AutoIncrement @Column(DataType.INTEGER) id!: number;
 
-  @AllowNull(false)
+  // @AllowNull(false)
+  // @Column({ field: 'transaction_id', type: DataType.INTEGER })
+  // transactionId!: number;
+  @ForeignKey(() => Transaction)
   @Column({ field: 'transaction_id', type: DataType.INTEGER })
   transactionId!: number;
 
@@ -63,4 +67,7 @@ export default class FraudEvent
   @CreatedAt
   @Column({ field: 'created_at', type: DataType.DATE })
   createdAt?: Date;
+
+  @BelongsTo(() => Transaction, { foreignKey: 'transaction_id', as: 'transaction' })
+  transaction?: Transaction;
 }

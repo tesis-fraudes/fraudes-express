@@ -1,8 +1,9 @@
 // src/modules/transaction/transaction.model.ts
 import {
   Table, Column, Model, PrimaryKey, AutoIncrement, AllowNull,
-  DataType, CreatedAt
+  DataType, CreatedAt, HasMany 
 } from 'sequelize-typescript';
+import FraudEvent from './fraud-event.model';
 import { Optional } from 'sequelize';
 
 export interface TransactionAttrs {
@@ -77,4 +78,7 @@ export default class Transaction
   @AllowNull(true)  @Column({ field: 'created_by', type: DataType.INTEGER }) createdBy!: number | null;
 
   @CreatedAt @Column({ field: 'created_at', type: DataType.DATE }) createdAt?: Date;
+
+  @HasMany(() => FraudEvent, { foreignKey: 'transaction_id', as: 'fraudEvents' })
+  fraudEvents?: FraudEvent[];
 }
