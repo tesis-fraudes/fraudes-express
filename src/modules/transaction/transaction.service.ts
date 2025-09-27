@@ -88,7 +88,7 @@ export async function purchase(data: PurchaseInput) {
         items: [
           {
             // no es necesario enviar transaction_id; lo omitimos
-            user_id: data.user_id,              // tu modelo usa int; API acepta string/number
+            user_id: String(data.user_id),              // tu modelo usa int; API acepta string/number
             transaction_amount: data.transaction_amount,
             transaction_hour: data.transaction_hour,
             is_proxy: Number(!!Number(data.is_proxy)),
@@ -113,6 +113,7 @@ export async function purchase(data: PurchaseInput) {
 
       // adapta a tu respuesta real:
       // esperado algo como { predictions: [{ fraud_score, class, prediction, fraud_probability }] }
+      console.log(resp)
       const p0 = resp?.results?.[0] ?? resp?.results?.[0] ?? resp ?? {};
       fraudScore = Number(p0.fraud_score);
       predClass = p0.class;
