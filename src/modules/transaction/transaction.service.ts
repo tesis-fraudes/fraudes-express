@@ -106,6 +106,8 @@ export async function purchase(data: PurchaseInput) {
         ],
       };
 
+      console.log(payload)
+
       const { data: resp } = await axios.post(PREDICT_URL, payload, {
         headers: { 'Content-Type': 'application/json' },
         timeout: 1000 * 20,
