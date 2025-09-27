@@ -43,8 +43,11 @@ export const putFraudEvent = async (req: Request, res: Response, next: NextFunct
     const id = Number(req.params.id);
     if (!Number.isFinite(id)) return res.status(400).json({ message: 'ID inválido' });
 
-    const { observation, result, consequences } = req.body || {};
-    const updated = await svc.updateFraudEventById(id, {
+    const { action, observation, result, consequences } = req.body || {};
+    if (!action) return res.status(400).json({ message: 'Falta "action" (approve|reject)' });
+
+    const updated = await svc.resolveFraudEventById(id, {
+      action,
       observation,
       result,
       consequences, // ejemplo: "bloqueo_tarjeta||alerta_cliente"
@@ -54,3 +57,5 @@ export const putFraudEvent = async (req: Request, res: Response, next: NextFunct
     res.json({ message: 'Actualizado', event: updated });
   } catch (err) { next(err); }
 };
+
+
