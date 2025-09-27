@@ -113,11 +113,11 @@ export async function purchase(data: PurchaseInput) {
 
       // adapta a tu respuesta real:
       // esperado algo como { predictions: [{ fraud_score, class, prediction, fraud_probability }] }
-      const p0 = resp?.predictions?.[0] ?? resp?.items?.[0] ?? resp ?? {};
-      fraudScore = Number(p0.fraud_score ?? p0.score ?? null);
-      predClass = p0.class ?? p0.label;
-      prediction = typeof p0.prediction === 'number' ? p0.prediction : undefined;
-      fraudProb = p0.fraud_probability ?? p0.probability;
+      const p0 = resp?.results?.[0] ?? resp?.results?.[0] ?? resp ?? {};
+      fraudScore = Number(p0.fraud_score);
+      predClass = p0.class;
+      prediction =  Number(p0.prediction);
+      fraudProb = Number(p0.fraud_probability);
     } catch (_apiErr) {
       // API no responde → dejamos trx PENDIENTE (0)
       await t.commit();
