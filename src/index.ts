@@ -9,6 +9,7 @@ import transactionRoutes from './modules/transaction/transaction.routes';
 import masterdataRoutes from './modules/masterdata/masterdata.routes';
 import transactionQueryRoutes from './modules/transaction/transaction.query.routes'
 import reportRoutes from './modules/report/report.routes';
+import authRoutes from './modules/auth/auth.routes';
 
 
 export default class Server {
@@ -93,6 +94,7 @@ export default class Server {
     this.app.use('/', masterdataRoutes);
     this.app.use('/', transactionQueryRoutes);
     this.app.use('/', reportRoutes);
+    this.app.use('/', authRoutes);
     this.app.use(`/health`, healthRoutes);
     this.app.use(`/neural-network`, neuralNetworkRoutes);
     this.app.use('/transaction', transactionRoutes);

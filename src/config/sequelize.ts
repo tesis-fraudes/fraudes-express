@@ -8,6 +8,9 @@ import Business from '../modules/masterdata/business.model';
 import Customer from '../modules/masterdata/customer.model';
 import PaymentMethod from '../modules/masterdata/payment-method.model';
 import Parameter from '../modules/masterdata/parameter.model';
+import Role from '../modules/auth/role.model';
+import User from '../modules/auth/user.model';
+import UserRole from '../modules/auth/user-role.model';
 
 export const sequelize = new Sequelize({
   dialect: 'postgres',
@@ -16,7 +19,7 @@ export const sequelize = new Sequelize({
   username: process.env.PGUSER,
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,
-  models: [NeuralNetwork, Transaction, Prediction, FraudEvent, Business, Customer, PaymentMethod, Parameter],
+  models: [NeuralNetwork, Transaction, Prediction, FraudEvent, Business, Customer, PaymentMethod, Parameter, Role, User, UserRole],
   dialectOptions: {
     ssl: {
       require: true,
