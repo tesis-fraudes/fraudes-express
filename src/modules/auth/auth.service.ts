@@ -12,22 +12,31 @@ export type LoginPayload = { email: string; password: string; role_id: number };
 export async function login({ email, password, role_id }: { email: string; password: string; role_id: number }) {
   const emailNorm = String(email).trim().toLowerCase();
 
-  const user = await User.findOne({
-    where: {
-      password: String(password),                         // comparación simple (demo)
-      [Op.and]: [
-        // lower(email) = 'correo@dominio'
-        sqWhere(fn('lower', col('email')), emailNorm),
-      ],
-    },
-  });
+  try {
+    const user = await User.findOne({
+      where: {
+        email: emailNorm,               
+        password: String(password),     
+      },
+    });
 
-  if (!user) return { ok: false, message: 'Credenciales inválidas' };
+    if (!user) return { ok: false, message: 'Credenciales inválidas' };
 
-  const rel = await UserRole.findOne({ where: { userId: user.id, roleId: Number(role_id) } });
-  if (!rel) return { ok: false, message: 'Rol no asignado al usuario' };
+    const rel = await UserRole.findOne({
+      where: { userId: user.id, roleId: Number(role_id) },
+    });
 
-  return { ok: true, user_id: user.id };
+    if (!rel) return { ok: false, message: 'Rol no asignado al usuario' };
+
+    return { ok: true, user_id: user.id };
+  } catch (err: any) {
+    // log útil si vuelve a fallar
+    const p = err?.parent || err?.original || {};
+    console.error('AUTH LOGIN PG CODE:', p.code);
+    console.error('AUTH LOGIN PG MSG:', p.message);
+    console.error('AUTH LOGIN PG DETAIL:', p.detail);
+    throw err;
+  }
 }
 
 export async function getUserById(id: number) {
