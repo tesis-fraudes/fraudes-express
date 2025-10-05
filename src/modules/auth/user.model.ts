@@ -11,7 +11,6 @@ export interface UserAttrs {
   idType: string | null;
   idNumber: string | null;
   phone: string | null;
-  address: string | null;
   area: string | null;
   email: string | null;
   password: string | null;
@@ -19,7 +18,7 @@ export interface UserAttrs {
   createdAt?: Date;
 }
 export type UserCreationAttrs = Optional<UserAttrs,
-  'id'|'names'|'lastName'|'secondLastName'|'idType'|'idNumber'|'phone'|'address'|'area'|'email'|'password'|'createdBy'|'createdAt'
+  'id'|'names'|'lastName'|'secondLastName'|'idType'|'idNumber'|'phone'|'area'|'email'|'password'|'createdBy'|'createdAt'
 >;
 
 @Table({ tableName: 'tbl_users', timestamps: false })
@@ -34,7 +33,6 @@ export default class User extends Model<UserAttrs, UserCreationAttrs> implements
   @Column({ field: 'id_number', type: DataType.STRING }) idNumber!: string | null;
 
   @Column({ field: 'phone', type: DataType.STRING })   phone!: string | null;
-  @Column({ field: 'address', type: DataType.STRING }) address!: string | null;
   @Column({ field: 'area', type: DataType.STRING })    area!: string | null;
 
   @Column({ field: 'email', type: DataType.STRING })    email!: string | null;
