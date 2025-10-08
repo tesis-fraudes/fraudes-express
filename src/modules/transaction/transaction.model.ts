@@ -81,8 +81,8 @@ export default class Transaction
 
   @CreatedAt @Column({ field: 'created_at', type: DataType.DATE }) createdAt?: Date;
 
-  @BelongsTo(() => Business, { as: 'business', foreignKey: 'business_id' })
-  business?: Business;
+  @HasMany(() => Business, { as: 'business', foreignKey: 'business_id' })
+  business?: Business[];
 
   @HasMany(() => FraudEvent, { foreignKey: 'transaction_id', as: 'fraudEvents' })
   fraudEvents?: FraudEvent[];

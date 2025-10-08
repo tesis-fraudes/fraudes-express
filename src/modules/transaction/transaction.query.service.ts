@@ -94,10 +94,10 @@ export async function getLastByCustomer(customerId: number) {
   return { average_amount, items: rows.map(r => r.toJSON()) };
 }
 
-export async function getFraudsByCustomer(businessId: number, customerId: number) {
+export async function getFraudsByCustomer(customerId: number) {
   return Transaction.findAll({
+    include: [{ model: Business, as: 'business', attributes: ['tradeName'] }],
     where: {
-      businessId,
       customerId,
       status: { [Op.in]: [4, 5] }, // 4 = rechazado auto, 5 = rechazado manual (según tu definición)
     },

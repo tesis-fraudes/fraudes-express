@@ -33,7 +33,7 @@ export const getFrauds = async (req: Request, res: Response, next: NextFunction)
       return res.status(400).json({ message: 'IDs inválidos' });
     }
 
-    const data = await svc.getFraudsByCustomer(businessId, customerId);
+    const data = await svc.getFraudsByCustomer(customerId);
     res.json(data);
   } catch (err) { next(err); }
 };
