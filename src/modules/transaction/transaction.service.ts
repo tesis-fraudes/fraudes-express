@@ -11,7 +11,7 @@ const PREDICT_URL = 'https://vnl7jyouid.execute-api.us-east-1.amazonaws.com/pred
 
 // thresholds
 const APPROVE_LT = 50;
-const REJECT_GT  = 90; // > 90 reject; [50..90] => suspicious
+const REJECT_GT  = 75; // > 75 reject; [50..75] => suspicious
 
 type PurchaseInput = {
   business_id: number;
