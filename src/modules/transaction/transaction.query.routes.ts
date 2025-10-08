@@ -7,11 +7,11 @@ const router = Router();
 // GET /transaction/:businessid/suspicious
 router.get('/transaction/:businessid/suspicious', getSuspicious);
 
-// GET /transaction/:businessid/:customerid/last
+// GET /transaction/:customerid/last
 router.get('/transaction/:customerid/last', getLast);
 
-// GET /transaction/:businessid/:customerid/frauds
-router.get('/transaction/:businessid/:customerid/frauds', getFrauds);
+// GET /transaction/:customerid/frauds
+router.get('/transaction/:customerid/frauds', getFrauds);
 
 // PUT /transaction/fraud_event/:id
 router.put('/transaction/fraud_event/:id', putFraudEvent);
