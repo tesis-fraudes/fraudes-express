@@ -3,6 +3,7 @@ import { Op, literal } from 'sequelize';
 import {sequelize} from '../../config/sequelize';
 import Transaction from './transaction.model';
 import FraudEvent from './fraud-event.model';
+import Business from '../masterdata/business.model';
 
 type ResolvePayload = {
   action: 'approve' | 'reject';
@@ -11,6 +12,47 @@ type ResolvePayload = {
   consequences?: string; // "a||b||c"
   userId?: number;       // opcional si quieres auditar
 };
+
+export async function searchSuspicious(filters: {
+  business_id?: number;
+  customer_id?: number;
+  transaction_id?: number;
+}) {
+  const where: any = { status: 3 };
+
+  if (filters.business_id && Number(filters.business_id) !== 0) {
+    where.businessId = Number(filters.business_id);
+  }
+  if (filters.customer_id && Number(filters.customer_id) !== 0) {
+    where.customerId = Number(filters.customer_id);
+  }
+  if (filters.transaction_id && Number(filters.transaction_id) !== 0) {
+    where.id = Number(filters.transaction_id);
+  }
+
+  const rows = await Transaction.findAll({
+    where,
+    include: [
+      { model: Business, as: 'business', attributes: ['tradeName'] },
+      {
+        model: FraudEvent,
+        as: 'fraudEvents',
+        attributes: ['id'],
+        required: false,
+        separate: true,
+        order: [['createdAt', 'DESC']],
+        limit: 1,
+      },
+    ],
+    order: [['createdAt', 'DESC']],
+  });
+
+  return rows.map(r => ({
+    ...r.toJSON(),
+    fraud_event_id: r.fraudEvents?.[0]?.id ?? null,
+    fraudEvents: undefined,
+  }));
+}
 
 export async function getSuspiciousByBusiness(businessId: number) {
   // status = 3 (sospechosa) e incluir el último fraude (si existe)
@@ -25,7 +67,7 @@ export async function getSuspiciousByBusiness(businessId: number) {
         separate: true,
         order: [['createdAt', 'DESC']],
         limit: 1,
-      },
+      },{ model: Business, as: 'business', attributes: ['tradeName'] }
     ],
     order: [['createdAt', 'DESC']],
   });
@@ -38,17 +80,18 @@ export async function getSuspiciousByBusiness(businessId: number) {
   }));
 }
 
-export async function getLastByCustomer(businessId: number, customerId: number) {
+export async function getLastByCustomer(customerId: number) {
   const rows = await Transaction.findAll({
-    where: { businessId, customerId },
+    where: { customerId },
     order: [['createdAt', 'DESC']],
     limit: 10,
+    include: [{ model: Business, as: 'business', attributes: ['tradeName'] }],
   });
 
   const total = rows.reduce((acc, t) => acc + (t.amount ?? 0), 0);
   const average_amount = rows.length ? Number((total / rows.length).toFixed(2)) : 0;
 
-  return { average_amount, items: rows };
+  return { average_amount, items: rows.map(r => r.toJSON()) };
 }
 
 export async function getFraudsByCustomer(businessId: number, customerId: number) {

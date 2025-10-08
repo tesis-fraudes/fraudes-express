@@ -1,10 +1,11 @@
 // src/modules/transaction/transaction.model.ts
 import {
   Table, Column, Model, PrimaryKey, AutoIncrement, AllowNull,
-  DataType, CreatedAt, HasMany 
+  DataType, CreatedAt, HasMany, ForeignKey, BelongsTo
 } from 'sequelize-typescript';
 import FraudEvent from './fraud-event.model';
 import { Optional } from 'sequelize';
+import Business from '../masterdata/business.model';
 
 export interface TransactionAttrs {
   id: number;
@@ -53,7 +54,8 @@ export default class Transaction
 {
   @PrimaryKey @AutoIncrement @Column(DataType.INTEGER) id!: number;
 
-  @AllowNull(false) @Column({ field: 'business_id', type: DataType.INTEGER }) businessId!: number;
+  @ForeignKey(() => Business) @AllowNull(false) @Column({ field: 'business_id', type: DataType.INTEGER }) businessId!: number;
+  //@AllowNull(false) @Column({ field: 'business_id', type: DataType.INTEGER }) businessId!: number;
   @AllowNull(false) @Column({ field: 'customer_id', type: DataType.INTEGER }) customerId!: number;
   @AllowNull(false) @Column({ field: 'payment_id',  type: DataType.INTEGER }) paymentId!: number;
 
@@ -78,6 +80,9 @@ export default class Transaction
   @AllowNull(true)  @Column({ field: 'created_by', type: DataType.INTEGER }) createdBy!: number | null;
 
   @CreatedAt @Column({ field: 'created_at', type: DataType.DATE }) createdAt?: Date;
+
+  @BelongsTo(() => Business, { as: 'business', foreignKey: 'business_id' })
+  business?: Business;
 
   @HasMany(() => FraudEvent, { foreignKey: 'transaction_id', as: 'fraudEvents' })
   fraudEvents?: FraudEvent[];

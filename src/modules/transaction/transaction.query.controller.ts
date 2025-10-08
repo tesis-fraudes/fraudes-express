@@ -20,7 +20,7 @@ export const getLast = async (req: Request, res: Response, next: NextFunction) =
       return res.status(400).json({ message: 'IDs inválidos' });
     }
 
-    const data = await svc.getLastByCustomer(businessId, customerId);
+    const data = await svc.getLastByCustomer(customerId);
     res.json(data);
   } catch (err) { next(err); }
 };
@@ -55,6 +55,18 @@ export const putFraudEvent = async (req: Request, res: Response, next: NextFunct
 
     if (!updated) return res.status(404).json({ message: 'Fraud event no encontrado' });
     res.json({ message: 'Actualizado', event: updated });
+  } catch (err) { next(err); }
+};
+
+export const postSuspiciousSearch = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { business_id = 0, customer_id = 0, transaction_id = 0 } = req.body || {};
+    const data = await svc.searchSuspicious({
+      business_id: Number(business_id),
+      customer_id: Number(customer_id),
+      transaction_id: Number(transaction_id),
+    });
+    res.json(data);
   } catch (err) { next(err); }
 };
 
