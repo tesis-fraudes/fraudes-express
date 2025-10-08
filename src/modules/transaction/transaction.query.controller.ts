@@ -14,9 +14,9 @@ export const getSuspicious = async (req: Request, res: Response, next: NextFunct
 
 export const getLast = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const businessId = Number(req.params.businessid);
+    //const businessId = Number(req.params.businessid);
     const customerId = Number(req.params.customerid);
-    if (!Number.isFinite(businessId) || !Number.isFinite(customerId)) {
+    if (!Number.isFinite(customerId)) {
       return res.status(400).json({ message: 'IDs inválidos' });
     }
 
@@ -27,9 +27,9 @@ export const getLast = async (req: Request, res: Response, next: NextFunction) =
 
 export const getFrauds = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const businessId = Number(req.params.businessid);
+    //const businessId = Number(req.params.businessid);
     const customerId = Number(req.params.customerid);
-    if (!Number.isFinite(businessId) || !Number.isFinite(customerId)) {
+    if (!Number.isFinite(customerId)) {
       return res.status(400).json({ message: 'IDs inválidos' });
     }
 

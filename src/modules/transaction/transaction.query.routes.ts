@@ -8,10 +8,10 @@ const router = Router();
 router.get('/transaction/:businessid/suspicious', getSuspicious);
 
 // GET /transaction/:customerid/last
-router.get('/transaction/:customerid/last', getLast);
+router.get('/transaction/customer/:customerid/last', getLast);
 
 // GET /transaction/:customerid/frauds
-router.get('/transaction/:customerid/frauds', getFrauds);
+router.get('/transaction/customer/:customerid/frauds', getFrauds);
 
 // PUT /transaction/fraud_event/:id
 router.put('/transaction/fraud_event/:id', putFraudEvent);
