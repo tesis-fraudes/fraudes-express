@@ -14,6 +14,18 @@ function normalizeDates({ startDate, endDate }: DateRange) {
   return { startISO: start.toISOString(), endPlusISO: endPlus.toISOString() };
 }
 
+function normalizeDates2({ startDate, endDate }: DateRange) {
+  const start = startDate ? new Date(startDate) : null;
+  const end = endDate ? new Date(endDate) : null;
+  const endPlus = end ? new Date(end.getTime() + 24 * 3600 * 1000) : null;
+  return {
+    hasStart: !!start,
+    hasEnd: !!end,
+    startISO: start ? start.toISOString() : null,
+    endPlusISO: endPlus ? endPlus.toISOString() : null,
+  };
+}
+
 function normalizePage({ limit, offset }: Page) {
   const l = Number.isFinite(limit as number) ? Math.min(Number(limit), 500) : 50;
   const o = Number.isFinite(offset as number) ? Number(offset) : 0;
@@ -206,4 +218,46 @@ export async function exportPredicted(range: DateRange) {
     type: QueryTypes.SELECT,
     replacements: { start: startISO, endPlus: endPlusISO },
   });
+}
+
+/** Reporte de overview: conteos por status con etiquetas, filtros opcionales */
+export async function getOverview(range: DateRange, businessId?: number) {
+  const { hasStart, hasEnd, startISO, endPlusISO } = normalizeDates2(range);
+  const hasBiz = Number.isFinite(businessId as number) && Number(businessId) > 0;
+
+  const sql = `
+    WITH labels(status, label) AS (
+      VALUES
+        (0, 'PENDIENTE'),
+        (1, 'APROBADO AUTOMÁTICAMENTE'),
+        (2, 'APROBADO MANUALMENTE'),
+        (3, 'SOSPECHOSA'),
+        (4, 'RECHAZADA AUTOMÁTICAMENTE'),
+        (5, 'RECHAZADA MANUALMENTE')
+    ),
+    counts AS (
+      SELECT t.status, COUNT(*)::bigint AS count
+      FROM tbl_transactions t
+      WHERE
+        (:hasStart = false OR t.created_at >= :start)
+        AND (:hasEnd = false OR t.created_at < :endPlus)
+        AND (:hasBiz = false OR t.business_id = :businessId)
+      GROUP BY t.status
+    )
+    SELECT l.status, l.label, COALESCE(c.count, 0) AS count
+    FROM labels l
+    LEFT JOIN counts c ON c.status = l.status
+    ORDER BY l.status;
+  `;
+
+  const rows = await sequelize.query(sql, {
+    type: QueryTypes.SELECT,
+    replacements: {
+      hasStart, hasEnd, hasBiz,
+      start: startISO, endPlus: endPlusISO,
+      businessId: hasBiz ? Number(businessId) : null,
+    },
+  });
+
+  return rows; // [{status:0,label:'PENDIENTE',count:...}, ...]
 }

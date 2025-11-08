@@ -54,3 +54,14 @@ export const exportPredicted = async (req: Request, res: Response, next: NextFun
     res.json(rows);
   } catch (e) { next(e); }
 };
+
+export const getOverview = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const startDate = (req.query.start_date as string) || undefined;
+    const endDate   = (req.query.end_date as string)   || undefined;
+    const businessId = req.query.business_id ? Number(req.query.business_id) : undefined;
+
+    const data = await svc.getOverview({ startDate, endDate }, businessId);
+    res.json(data);
+  } catch (e) { next(e); }
+};

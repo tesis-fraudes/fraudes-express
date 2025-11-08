@@ -4,6 +4,7 @@ import {
   getApproveds, exportApproveds,
   getRejecteds, exportRejecteds,
   getPredicted, exportPredicted,
+  getOverview,
 } from './report.controller';
 
 const router = Router();
@@ -16,5 +17,7 @@ router.get('/report/transactions/rejecteds/export', exportRejecteds);
 
 router.get('/report/predicted', getPredicted);
 router.get('/report/predicted/export', exportPredicted);
+
+router.get('/report/overview', getOverview);
 
 export default router;
